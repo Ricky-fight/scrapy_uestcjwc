@@ -13,19 +13,19 @@ class UestcSpider(scrapy.Spider):
 
     def parse(self, response):
         def mail(url, title):
-            server = zmail.server('18918735979@163.com', 'xw64153869')
+            server = zmail.server('mail@address.com', 'pass')
 
             mail = {
                 'subject': '教务处有新公告:%s' %(title),
                 'content_html': url,
             }
-            server.send_mail('18918735979@163.com', mail)
+            server.send_mail('mail@address.com', mail)
             pass
         # Connect to the database
         connection = pymysql.connect(host='localhost',
-                                     user='xingwei',
-                                     password='ricky998927',
-                                     db='uestcjwc',
+                                     user='xxxxx',# MySQL username
+                                     password='xxxxx',# pass
+                                     db='uestcjwc',#db names
                                      charset='utf8mb4',
                                      cursorclass=pymysql.cursors.DictCursor)
 
@@ -48,7 +48,7 @@ class UestcSpider(scrapy.Spider):
                     cursor.execute(selectsql, (id[i]))
                     result = cursor.fetchone()
                     if result is None:
-                        print('---------!!New record!!--------')
+                        # print('---------!!New record!!--------')
                         insertsql = "INSERT INTO `news` VALUES (%s, %s, %s)"
                         cursor.execute(insertsql, (id[i], title[i], date[i]))
                         # connection is not autocommit by default. So you must commit to save
@@ -58,10 +58,7 @@ class UestcSpider(scrapy.Spider):
                         url = 'http://www.jwc.uestc.edu.cn/web/News!view.action?id=%s' % (id[i])
                         mail(url,title[i])
                     else:
-                        print('---------!!Old record!!--------')
-                    pass
-            # mail('http://www.jwc.uestc.edu.cn/web/News!view.action?id=1', title[i])
-            # mail(response.body.decode(), title[i])
+                        # print('---------!!Old record!!--------')
         finally:
             connection.close()
         # for i in range(len(id)):
